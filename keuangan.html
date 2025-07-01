@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Farm - Keuangan</title>
+    <style>
+        :root {
+            --primary-green: #00B04F;
+            --secondary-green: #34C759;
+            --accent-green: #40E85B;
+            --dark-green: #1B5E20;
+            --light-green: #E8F5E8;
+            --bg-primary: #F8F9FA;
+            --bg-secondary: #FFFFFF;
+            --text-primary: #1D1D1F;
+            --text-secondary: #6E6E73;
+            --border-light: #E5E5E7;
+            --shadow-light: rgba(0, 0, 0, 0.04);
+            --shadow-medium: rgba(0, 0, 0, 0.08);
+            --shadow-dark: rgba(0, 0, 0, 0.12);
+            --border-radius: 16px;
+            --border-radius-large: 24px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+            font-size: 16px;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 280px;
+            height: 100vh;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-light);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            margin-bottom: 32px;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+            border-radius: var(--border-radius);
+            color: white;
+        }
+
+        .logo {
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+            margin-right: 12px;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .welcome {
+            font-size: 14px;
+            font-weight: 600;
+            opacity: 0.9;
+            margin-bottom: 4px;
+        }
+
+        .user-role {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .nav-menu {
+            list-style: none;
+            flex: 1;
+        }
+
+        .nav-item {
+            margin-bottom: 4px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            font-size: 15px;
+        }
+
+        .nav-link:hover {
+            background-color: var(--light-green);
+            color: var(--primary-green);
+        }
+
+        .nav-link.active {
+            background-color: var(--primary-green);
+            color: white;
+            box-shadow: 0 2px 8px rgba(0, 176, 79, 0.24);
+        }
+
+        .nav-icon {
+            margin-right: 12px;
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .settings-section {
+            padding-top: 16px;
+            border-top: 1px solid var(--border-light);
+            margin-top: 16px;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            padding: 24px;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius-large);
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 16px var(--shadow-light);
+            border: 1px solid var(--border-light);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .header-subtitle {
+            color: var(--text-secondary);
+            font-size: 16px;
+            font-weight: 400;
+        }
+
+        /* Summary Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .summary-card {
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            box-shadow: 0 2px 8px var(--shadow-light);
+            border: 1px solid var(--border-light);
+            transition: all 0.2s ease;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px var(--shadow-medium);
+        }
+
+        .summary-card h3 {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .summary-amount {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -1px;
+        }
+
+        .summary-change {
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .total-asset { color: var(--primary-green); }
+        .income { color: #007AFF; }
+        .expense { color: #FF3B30; }
+        .profit { color: var(--secondary-green); }
+
+        .change-positive {
+            color: var(--secondary-green);
+        }
+
+        .change-negative {
+            color: #FF3B30;
+        }
+
+        /* Chart Section */
+        .chart-section {
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            margin-bottom: 32px;
+            box-shadow: 0 2px 8px var(--shadow-light);
+            border: 1px solid var(--border-light);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .chart-period {
+            display: flex;
+            gap: 8px;
+        }
+
+        .period-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border-light);
+            background: var(--bg-primary);
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+        }
+
+        .period-btn.active {
+            background: var(--primary-green);
+            color: white;
+            border-color: var(--primary-green);
+        }
+
+        .period-btn:hover:not(.active) {
+            background: var(--light-green);
+            color: var(--primary-green);
+        }
+
+        .chart-placeholder {
+            height: 300px;
+            background: var(--bg-primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 16px;
+            font-weight: 500;
+            border: 2px dashed var(--border-light);
+        }
+
+        /* Transactions Section */
+        .transactions-section {
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            box-shadow: 0 2px 8px var(--shadow-light);
+            border: 1px solid var(--border-light);
+        }
+
+        .transactions-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 18px;
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+            border-radius: 2px;
+            margin-right: 12px;
+        }
+
+        .add-transaction-btn {
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0, 176, 79, 0.24);
+        }
+
+        .add-transaction-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 176, 79, 0.32);
+        }
+
+        /* Table Styling */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .table th {
+            background: var(--bg-primary);
+            padding: 16px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-light);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .table td {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-light);
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .table tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        .table tbody tr:hover {
+            background-color: var(--bg-primary);
+        }
+
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Transaction Types */
+        .transaction-type {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .type-income {
+            background: rgba(0, 122, 255, 0.1);
+            color: #005BB5;
+            border: 1px solid rgba(0, 122, 255, 0.2);
+        }
+
+        .type-expense {
+            background: rgba(255, 59, 48, 0.1);
+            color: #D70015;
+            border: 1px solid rgba(255, 59, 48, 0.2);
+        }
+
+        /* Amount styling */
+        .amount {
+            font-weight: 700;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+        }
+
+        .amount-positive {
+            color: var(--secondary-green);
+        }
+
+        .amount-negative {
+            color: #FF3B30;
+        }
+
+        /* Mobile Menu Toggle */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 12px;
+            cursor: pointer;
+            box-shadow: 0 2px 16px var(--shadow-light);
+            color: var(--text-primary);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            
+            .header {
+                padding: 24px;
+                margin-top: 60px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-period {
+                flex-wrap: wrap;
+            }
+
+            .transactions-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 16px;
+            }
+
+            .table-container {
+                overflow-x: auto;
+            }
+
+            .table {
+                min-width: 600px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" onclick="toggleSidebar()">
+        <span style="font-size: 18px;">☰</span>
+    </button>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="logo-section">
+            <div class="logo">SF</div>
+            <div class="user-info">
+                <div class="welcome">Selamat Datang, Ifa!</div>
+                <div class="user-role">Manajer Peternakan</div>
+            </div>
+        </div>
+        
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="dashboard.html" class="nav-link">
+                    <span class="nav-icon">📊</span>
+                    Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="data_ternak.html" class="nav-link">
+                    <span class="nav-icon">🐄</span>
+                    Data Ternak
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="monitoring_sensor.html" class="nav-link">
+                    <span class="nav-icon">📡</span>
+                    Monitoring Sensor
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="pakan.html" class="nav-link">
+                    <span class="nav-icon">🌾</span>
+                    Pakan
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="keuangan.html" class="nav-link active">
+                    <span class="nav-icon">💰</span>
+                    Keuangan
+                </a>
+            </li>
+        </ul>
+        
+        <div class="settings-section">
+            <a href="#" class="nav-link">
+                <span class="nav-icon">⚙</span>
+                Pengaturan
+            </a>
+        </div>
+         <div class="settings-section">
+            <a href="login.html" class="nav-link">
+                <span class="nav-icon">⚙</span>
+                exit
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1>Keuangan</h1>
+            <p class="header-subtitle">Pantau pendapatan, pengeluaran, dan kesehatan finansial peternakan</p>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="summary-grid">
+            <div class="summary-card">
+                <h3>Total Aset</h3>
+                <div class="summary-amount total-asset">Rp 45.500.000</div>
+                <div class="summary-change change-positive">+12.5% dari bulan lalu</div>
+            </div>
+            <div class="summary-card">
+                <h3>Pendapatan Bulan Ini</h3>
+                <div class="summary-amount income">Rp 8.200.000</div>
+                <div class="summary-change change-positive">+8.3% dari bulan lalu</div>
+            </div>
+            <div class="summary-card">
+                <h3>Pengeluaran Bulan Ini</h3>
+                <div class="summary-amount expense">Rp 3.750.000</div>
+                <div class="summary-change change-negative">+5.2% dari bulan lalu</div>
+            </div>
+            <div class="summary-card">
+                <h3>Keuntungan Bersih</h3>
+                <div class="summary-amount profit">Rp 4.450.000</div>
+                <div class="summary-change change-positive">+15.7% dari bulan lalu</div>
+            </div>
+        </div>
+
+        <!-- Chart Section -->
+        <div class="chart-section">
+            <div class="chart-header">
+                <h2 class="chart-title">Grafik Keuangan</h2>
+                <div class="chart-period">
+                    <button class="period-btn" onclick="setPeriod('7d')">7 Hari</button>
+                    <button class="period-btn active" onclick="setPeriod('1m')">1 Bulan</button>
+                    <button class="period-btn" onclick="setPeriod('3m')">3 Bulan</button>
+                    <button class="period-btn" onclick="setPeriod('1y')">1 Tahun</button>
+                </div>
+            </div>
+            <div class="chart-placeholder">
+                📈 Grafik pendapatan vs pengeluaran akan ditampilkan di sini
+            </div>
+        </div>
+
+        <!-- Transactions -->
+        <div class="transactions-section">
+            <div class="transactions-header">
+                <h2 class="section-title">💼 Riwayat Transaksi</h2>
+                <button class="add-transaction-btn" onclick="addTransaction()">+ Transaksi Baru</button>
+            </div>
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Tanggal</th>
+                            <th>Jenis</th>
+                            <th>Deskripsi</th>
+                            <th>Kategori</th>
+                            <th>Jumlah</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>07 Jun 2025</td>
+                            <td><span class="transaction-type type-income">Pendapatan</span></td>
+                            <td>Penjualan Sapi #105</td>
+                            <td>Penjualan Ternak</td>
+                            <td class="amount amount-positive">+Rp 1.500.000</td>
+                        </tr>
+                        <tr>
+                            <td>06 Jun 2025</td>
+                            <td><span class="transaction-type type-expense">Pengeluaran</span></td>
+                            <td>Pembelian Pakan Konsentrat</td>
+                            <td>Pakan</td>
+                            <td class="amount amount-negative">-Rp 450.000</td>
+                        </tr>
+                        <tr>
+                            <td>05 Jun 2025</td>
+                            <td><span class="transaction-type type-income">Pendapatan</span></td>
+                            <td>Penjualan Susu</td>
+                            <td>Produk Ternak</td>
+                            <td class="amount amount-positive">+Rp 750.000</td>
+                        </tr>
+                        <tr>
+                            <td>04 Jun 2025</td>
+                            <td><span class="transaction-type type-expense">Pengeluaran</span></td>
+                            <td>Biaya Veteriner</td>
+                            <td>Kesehatan</td>
+                            <td class="amount amount-negative">-Rp 300.000</td>
+                        </tr>
+                        <tr>
+                            <td>03 Jun 2025</td>
+                            <td><span class="transaction-type type-income">Pendapatan</span></td>
+                            <td>Penjualan Sapi #103</td>
+                            <td>Penjualan Ternak</td>
+                            <td class="amount amount-positive">+Rp 1.200.000</td>
+                        </tr>
+                        <tr>
+                            <td>02 Jun 2025</td>
+                            <td><span class="transaction-type type-expense">Pengeluaran</span></td>
+                            <td>Pembelian Vitamin</td>
+                            <td>Kesehatan</td>
+                            <td class="amount amount-negative">-Rp 175.000</td>
+                        </tr>
+                        <tr>
+                            <td>01 Jun 2025</td>
+                            <td><span class="transaction-type type-expense">Pengeluaran</span></td>
+                            <td>Listrik & Air</td>
+                            <td>Operasional</td>
+                            <td class="amount amount-negative">-Rp 425.000</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+
+        function setPeriod(period) {
+            // Remove active class from all buttons
+            document.querySelectorAll('.period-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+            
+            // Update chart (placeholder)
+            const placeholder = document.querySelector('.chart-placeholder');
+            placeholder.textContent = `📈 Grafik untuk periode ${period} akan ditampilkan di sini`;
+        }
+
+        function addTransaction() {
+            alert('Fitur tambah transaksi baru akan segera hadir!');
+        }
+
+        // Simulate real-time financial updates
+        function updateFinancialData() {
+            const cards = document.querySelectorAll('.summary-card');
+            
+            // Randomly update some financial data
+            if (Math.random() < 0.1) {
+                cards.forEach(card => {
+                    const changeElement = card.querySelector('.summary-change');
+                    if (changeElement && Math.random() < 0.3) {
+                        const isPositive = Math.random() > 0.3;
+                        const change = (Math.random() * 20).toFixed(1);
+                        
+                        changeElement.className = `summary-change ${isPositive ? 'change-positive' : 'change-negative'}`;
+                        changeElement.textContent =` ${isPositive ? '+' : '-'}${change}% dari bulan lalu`;
+                    }
+                });
+            }
+        }
+
+        // Update financial data every 2 minutes
+        setInterval(updateFinancialData, 120000);
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (e) => {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            
+            if (window.innerWidth <= 768 && 
+                !sidebar.contains(e.target) && 
+                !toggle.contains(e.target) && 
+                sidebar.classList.contains('open')) {
+                sidebar.classList.remove('open');
+            }
+        });
+    </script>
+</body>
+</html>

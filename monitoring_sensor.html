@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Farm - Monitoring Sensor</title>
+    <style>
+        :root {
+            --primary-green: #00B04F;
+            --secondary-green: #34C759;
+            --accent-green: #40E85B;
+            --dark-green: #1B5E20;
+            --light-green: #E8F5E8;
+            --bg-primary: #F8F9FA;
+            --bg-secondary: #FFFFFF;
+            --text-primary: #1D1D1F;
+            --text-secondary: #6E6E73;
+            --border-light: #E5E5E7;
+            --shadow-light: rgba(0, 0, 0, 0.04);
+            --shadow-medium: rgba(0, 0, 0, 0.08);
+            --shadow-dark: rgba(0, 0, 0, 0.12);
+            --border-radius: 16px;
+            --border-radius-large: 24px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+            font-size: 16px;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 280px;
+            height: 100vh;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-light);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            margin-bottom: 32px;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+            border-radius: var(--border-radius);
+            color: white;
+        }
+
+        .logo {
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+            margin-right: 12px;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .welcome {
+            font-size: 14px;
+            font-weight: 600;
+            opacity: 0.9;
+            margin-bottom: 4px;
+        }
+
+        .user-role {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .nav-menu {
+            list-style: none;
+            flex: 1;
+        }
+
+        .nav-item {
+            margin-bottom: 4px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            font-size: 15px;
+        }
+
+        .nav-link:hover {
+            background-color: var(--light-green);
+            color: var(--primary-green);
+        }
+
+        .nav-link.active {
+            background-color: var(--primary-green);
+            color: white;
+            box-shadow: 0 2px 8px rgba(0, 176, 79, 0.24);
+        }
+
+        .nav-icon {
+            margin-right: 12px;
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .settings-section {
+            padding-top: 16px;
+            border-top: 1px solid var(--border-light);
+            margin-top: 16px;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            padding: 24px;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius-large);
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 16px var(--shadow-light);
+            border: 1px solid var(--border-light);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .header-subtitle {
+            color: var(--text-secondary);
+            font-size: 16px;
+            font-weight: 400;
+        }
+
+        /* Search and Controls */
+        .controls {
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px var(--shadow-light);
+            border: 1px solid var(--border-light);
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 240px;
+            padding: 12px 16px;
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-primary);
+            background: var(--bg-primary);
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 4px rgba(0, 176, 79, 0.1);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .add-btn {
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0, 176, 79, 0.24);
+            white-space: nowrap;
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 176, 79, 0.32);
+        }
+
+        /* Table Container */
+        .table-container {
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 8px var(--shadow-light);
+            border: 1px solid var(--border-light);
+            overflow: hidden;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 15px;
+        }
+
+        .table th {
+            background: var(--bg-primary);
+            padding: 16px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-light);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .table td {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-light);
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .table tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        .table tbody tr:hover {
+            background-color: var(--bg-primary);
+        }
+
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Status Indicators */
+        .status {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-active {
+            background: rgba(52, 199, 89, 0.1);
+            color: var(--dark-green);
+            border: 1px solid rgba(52, 199, 89, 0.2);
+        }
+
+        .status-active::before {
+            content: '●';
+            margin-right: 6px;
+            color: var(--secondary-green);
+        }
+
+        .status-inactive {
+            background: rgba(255, 59, 48, 0.1);
+            color: #D70015;
+            border: 1px solid rgba(255, 59, 48, 0.2);
+        }
+
+        .status-inactive::before {
+            content: '●';
+            margin-right: 6px;
+            color: #FF3B30;
+        }
+
+        .status-warning {
+            background: rgba(255, 149, 0, 0.1);
+            color: #C65100;
+            border: 1px solid rgba(255, 149, 0, 0.2);
+        }
+
+        .status-warning::before {
+            content: '●';
+            margin-right: 6px;
+            color: #FF9500;
+        }
+
+        /* Sensor ID styling */
+        .sensor-id {
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+            background: var(--bg-primary);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--primary-green);
+        }
+
+        /* Mobile Menu Toggle */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 12px;
+            cursor: pointer;
+            box-shadow: 0 2px 16px var(--shadow-light);
+            color: var(--text-primary);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            
+            .header {
+                padding: 24px;
+                margin-top: 60px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-input {
+                min-width: 100%;
+            }
+
+            .table-container {
+                overflow-x: auto;
+            }
+
+            .table {
+                min-width: 600px;
+            }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .empty-state p {
+            font-size: 15px;
+            margin-bottom: 24px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" onclick="toggleSidebar()">
+        <span style="font-size: 18px;">☰</span>
+    </button>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="logo-section">
+            <div class="logo">SF</div>
+            <div class="user-info">
+                <div class="welcome">Selamat Datang, Ifa!</div>
+                <div class="user-role">Manajer Peternakan</div>
+            </div>
+        </div>
+        
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="dashboard.html" class="nav-link">
+                    <span class="nav-icon">📊</span>
+                    Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="data_ternak.html" class="nav-link">
+                    <span class="nav-icon">🐄</span>
+                    Data Ternak
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="monitoring_sensor.html" class="nav-link active">
+                    <span class="nav-icon">📡</span>
+                    Monitoring Sensor
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="pakan.html" class="nav-link">
+                    <span class="nav-icon">🌾</span>
+                    Pakan
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="keuangan.html" class="nav-link">
+                    <span class="nav-icon">💰</span>
+                    Keuangan
+                </a>
+            </li>
+        </ul>
+        
+        <div class="settings-section">
+            <a href="#" class="nav-link">
+                <span class="nav-icon">⚙</span>
+                Pengaturan
+            </a>
+        </div>
+         <div class="settings-section">
+            <a href="login.html" class="nav-link">
+                <span class="nav-icon">⚙</span>
+                exit
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1>Monitoring Sensor</h1>
+            <p class="header-subtitle">Pantau sensor dan perangkat IoT secara real-time</p>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <input type="text" class="search-input" placeholder="Cari sensor berdasarkan ID, nama, atau lokasi..." id="searchInput">
+            <button class="add-btn" onclick="addNewSensor()">+ Tambah Sensor</button>
+        </div>
+
+        <!-- Sensor Table -->
+        <div class="table-container">
+            <table class="table" id="sensorTable">
+                <thead>
+                    <tr>
+                        <th>ID Sensor</th>
+                        <th>Nama Sensor</th>
+                        <th>Status</th>
+                        <th>Terakhir Update</th>
+                        <th>Lokasi</th>
+                        <th>Catatan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="sensor-id">S001</span></td>
+                        <td>Suhu Tubuh Ternak (Sapi 101)</td>
+                        <td><span class="status status-active">Aktif</span></td>
+                        <td>10 menit yang lalu</td>
+                        <td>Kandang 1</td>
+                        <td>Suhu normal (38.5°C)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="sensor-id">S002</span></td>
+                        <td>Detak Jantung Ternak (Sapi 101)</td>
+                        <td><span class="status status-inactive">Tidak Aktif</span></td>
+                        <td>1 jam yang lalu</td>
+                        <td>Kandang 2</td>
+                        <td>Perlu penggantian baterai</td>
+                    </tr>
+                    <tr>
+                        <td><span class="sensor-id">S003</span></td>
+                        <td>Suhu Kandang</td>
+                        <td><span class="status status-active">Aktif</span></td>
+                        <td>5 menit yang lalu</td>
+                        <td>Kandang 1</td>
+                        <td>Suhu kandang optimal (27°C)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="sensor-id">S004</span></td>
+                        <td>Kadar Amonia</td>
+                        <td><span class="status status-warning">Perhatian</span></td>
+                        <td>10 menit yang lalu</td>
+                        <td>Kandang 1</td>
+                        <td>Kadar amonia sedikit tinggi (7ppm)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="sensor-id">S005</span></td>
+                        <td>Kelembaban Kandang</td>
+                        <td><span class="status status-active">Aktif</span></td>
+                        <td>3 menit yang lalu</td>
+                        <td>Kandang 2</td>
+                        <td>Kelembaban optimal (68%)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="sensor-id">S006</span></td>
+                        <td>Kualitas Udara</td>
+                        <td><span class="status status-active">Aktif</span></td>
+                        <td>7 menit yang lalu</td>
+                        <td>Kandang 3</td>
+                        <td>Kualitas udara baik</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+
+        function addNewSensor() {
+            alert('Fitur tambah sensor baru akan segera hadir!');
+        }
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const table = document.getElementById('sensorTable');
+            const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                const cells = row.getElementsByTagName('td');
+                let found = false;
+
+                for (let j = 0; j < cells.length; j++) {
+                    if (cells[j].textContent.toLowerCase().includes(searchTerm)) {
+                        found = true;
+                        break;
+                    }
+                }
+
+                row.style.display = found ? '' : 'none';
+            }
+        });
+
+        // Simulate real-time updates
+        function updateSensorData() {
+            const rows = document.querySelectorAll('#sensorTable tbody tr');
+            rows.forEach((row, index) => {
+                const lastUpdateCell = row.cells[3];
+                const statusCell = row.cells[2];
+                
+                // Randomly update some sensors
+                if (Math.random() < 0.3) {
+                    const minutes = Math.floor(Math.random() * 15) + 1;
+                    lastUpdateCell.textContent = `${minutes} menit yang lalu`;
+                    
+                    // Sometimes change status
+                    if (Math.random() < 0.1) {
+                        const currentStatus = statusCell.querySelector('.status');
+                        if (currentStatus.classList.contains('status-inactive')) {
+                            currentStatus.className = 'status status-active';
+                            currentStatus.textContent = 'Aktif';
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update sensor data every 30 seconds
+        setInterval(updateSensorData, 30000);
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (e) => {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            
+            if (window.innerWidth <= 768 && 
+                !sidebar.contains(e.target) && 
+                !toggle.contains(e.target) && 
+                sidebar.classList.contains('open')) {
+                sidebar.classList.remove('open');
+            }
+        });
+    </script>
+</body>
+</html>

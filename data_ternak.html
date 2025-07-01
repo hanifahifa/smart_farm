@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Farm - Data Ternak</title>
+    <style>
+        :root {
+            --primary-green: #00B04F;
+            --secondary-green: #34C759;
+            --accent-green: #40E85B;
+            --dark-green: #1B5E20;
+            --light-green: #E8F5E8;
+            --bg-primary: #F8F9FA;
+            --bg-secondary: #FFFFFF;
+            --text-primary: #1D1D1F;
+            --text-secondary: #6E6E73;
+            --border-light: #E5E5E7;
+            --shadow-light: rgba(0, 0, 0, 0.04);
+            --shadow-medium: rgba(0, 0, 0, 0.08);
+            --shadow-dark: rgba(0, 0, 0, 0.12);
+            --border-radius: 16px;
+            --border-radius-large: 24px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+            font-size: 16px;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 280px;
+            height: 100vh;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-light);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            margin-bottom: 32px;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+            border-radius: var(--border-radius);
+            color: white;
+        }
+
+        .logo {
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+            margin-right: 12px;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .welcome {
+            font-size: 14px;
+            font-weight: 600;
+            opacity: 0.9;
+            margin-bottom: 4px;
+        }
+
+        .user-role {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .nav-menu {
+            list-style: none;
+            flex: 1;
+        }
+
+        .nav-item {
+            margin-bottom: 4px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            font-size: 15px;
+        }
+
+        .nav-link:hover {
+            background-color: var(--light-green);
+            color: var(--primary-green);
+        }
+
+        .nav-link.active {
+            background-color: var(--primary-green);
+            color: white;
+            box-shadow: 0 2px 8px rgba(0, 176, 79, 0.24);
+        }
+
+        .nav-icon {
+            margin-right: 12px;
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .settings-section {
+            padding-top: 16px;
+            border-top: 1px solid var(--border-light);
+            margin-top: 16px;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            padding: 24px;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius-large);
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 16px var(--shadow-light);
+            border: 1px solid var(--border-light);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .header-subtitle {
+            color: var(--text-secondary);
+            font-size: 16px;
+            font-weight: 400;
+        }
+
+        /* Stats Overview */
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 8px var(--shadow-light);
+            border: 1px solid var(--border-light);
+            transition: all 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px var(--shadow-medium);
+        }
+
+        .stat-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -1px;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .healthy { color: var(--secondary-green); }
+        .sick { color: #FF3B30; }
+        .pregnant { color: #FF9500; }
+        .total { color: var(--primary-green); }
+
+        /* Controls */
+        .controls {
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px var(--shadow-light);
+            border: 1px solid var(--border-light);
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 240px;
+            padding: 12px 16px;
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-primary);
+            background: var(--bg-primary);
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 4px rgba(0, 176, 79, 0.1);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .filter-select {
+            padding: 12px 16px;
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-primary);
+            background: var(--bg-primary);
+            transition: all 0.2s ease;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .filter-select:focus {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 4px rgba(0, 176, 79, 0.1);
+        }
+
+        .add-btn {
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0, 176, 79, 0.24);
+            white-space: nowrap;
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 176, 79, 0.32);
+        }
+
+        /* Livestock Grid */
+        .livestock-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .livestock-card {
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            box-shadow: 0 2px 8px var(--shadow-light);
+            border: 1px solid var(--border-light);
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .livestock-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px var(--shadow-medium);
+        }
+
+        .livestock-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .livestock-id {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .livestock-type {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-healthy {
+            background: rgba(52, 199, 89, 0.1);
+            color: var(--dark-green);
+            border: 1px solid rgba(52, 199, 89, 0.2);
+        }
+
+        .status-sick {
+            background: rgba(255, 59, 48, 0.1);
+            color: #D70015;
+            border: 1px solid rgba(255, 59, 48, 0.2);
+        }
+
+        .status-pregnant {
+            background: rgba(255, 149, 0, 0.1);
+            color: #C65100;
+            border: 1px solid rgba(255, 149, 0, 0.2);
+        }
+
+        .status-treatment {
+            background: rgba(88, 86, 214, 0.1);
+            color: #5856D6;
+            border: 1px solid rgba(88, 86, 214, 0.2);
+        }
+
+        .livestock-info {
+            margin-bottom: 16px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .info-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .info-value {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .livestock-health {
+            background: var(--bg-primary);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 16px;
+        }
+
+        .health-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .health-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .health-metric {
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary-green);
+            margin-bottom: 2px;
+        }
+
+        .metric-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .livestock-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid var(--border-light);
+            background: var(--bg-primary);
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+        }
+
+        .action-btn:hover {
+            background: var(--primary-green);
+            color: white;
+            border-color: var(--primary-green);
+        }
+
+        .action-btn.primary {
+            background: var(--primary-green);
+            color: white;
+            border-color: var(--primary-green);
+        }
+
+        .action-btn.primary:hover {
+            background: var(--dark-green);
+            border-color: var(--dark-green);
+        }
+
+        /* Mobile Menu Toggle */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 12px;
+            cursor: pointer;
+            box-shadow: 0 2px 16px var(--shadow-light);
+            color: var(--text-primary);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            
+            .header {
+                padding: 24px;
+                margin-top: 60px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .stats-overview {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-input {
+                min-width: 100%;
+            }
+
+            .livestock-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Loading Animation */
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .loading {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" onclick="toggleSidebar()">
+        <span style="font-size: 18px;">☰</span>
+    </button>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="logo-section">
+            <div class="logo">SF</div>
+            <div class="user-info">
+                <div class="welcome">Selamat Datang, Ifa!</div>
+                <div class="user-role">Manajer Peternakan</div>
+            </div>
+        </div>
+        
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="dashboard.html" class="nav-link">
+                    <span class="nav-icon">📊</span>
+                    Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="data_ternak.html" class="nav-link active">
+                    <span class="nav-icon">🐄</span>
+                    Data Ternak
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="monitoring_sensor.html" class="nav-link">
+                    <span class="nav-icon">📡</span>
+                    Monitoring Sensor
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="pakan.html" class="nav-link">
+                    <span class="nav-icon">🌾</span>
+                    Pakan
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="keuangan.html" class="nav-link">
+                    <span class="nav-icon">💰</span>
+                    Keuangan
+                </a>
+            </li>
+        </ul>
+        
+        <div class="settings-section">
+            <a href="login.html" class="nav-link">
+                <span class="nav-icon">⚙</span>
+                Pengaturan
+            </a>
+        </div>
+         <div class="settings-section">
+            <a href="login.html" class="nav-link">
+                <span class="nav-icon">⚙</span>
+                exit
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1>Data Ternak</h1>
+            <p class="header-subtitle">Kelola informasi dan kesehatan ternak secara komprehensif</p>
+        </div>
+
+        <!-- Stats Overview -->
+        <div class="stats-overview">
+            <div class="stat-card">
+                <div class="stat-icon">🐄</div>
+                <div class="stat-number total">500</div>
+                <div class="stat-label">Total Ternak</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💚</div>
+                <div class="stat-number healthy">450</div>
+                <div class="stat-label">Sehat</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🤒</div>
+                <div class="stat-number sick">25</div>
+                <div class="stat-label">Sakit</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🤱</div>
+                <div class="stat-number pregnant">25</div>
+                <div class="stat-label">Hamil</div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <input type="text" class="search-input" placeholder="Cari berdasarkan ID, jenis, atau kandang..." id="searchInput">
+            <select class="filter-select" id="statusFilter">
+                <option value="">Semua Status</option>
+                <option value="healthy">Sehat</option>
+                <option value="sick">Sakit</option>
+                <option value="pregnant">Hamil</option>
+                <option value="treatment">Perawatan</option>
+            </select>
+            <select class="filter-select" id="typeFilter">
+                <option value="">Semua Jenis</option>
+                <option value="sapi">Sapi</option>
+                <option value="kambing">Kambing</option>
+                <option value="domba">Domba</option>
+            </select>
+            <button class="add-btn" onclick="addLivestock()">+ Tambah Ternak</button>
+        </div>
+
+        <!-- Livestock Grid -->
+        <div class="livestock-grid" id="livestockGrid">
+            <!-- Sapi Sehat -->
+            <div class="livestock-card" data-status="healthy" data-type="sapi">
+                <div class="livestock-header">
+                    <div>
+                        <div class="livestock-id">SAPI-001</div>
+                        <div class="livestock-type">Sapi Holstein</div>
+                    </div>
+                    <div class="status-badge status-healthy">Sehat</div>
+                </div>
+                <div class="livestock-info">
+                    <div class="info-row">
+                        <span class="info-label">Umur:</span>
+                        <span class="info-value">3 tahun 2 bulan</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Berat:</span>
+                        <span class="info-value">450 kg</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Kandang:</span>
+                        <span class="info-value">Kandang A-1</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Terakhir Periksa:</span>
+                        <span class="info-value">3 hari lalu</span>
+                    </div>
+                </div>
+                <div class="livestock-health">
+                    <div class="health-title">Kondisi Kesehatan</div>
+                    <div class="health-metrics">
+                        <div class="health-metric">
+                            <div class="metric-value">38.5°C</div>
+                            <div class="metric-label">Suhu</div>
+                        </div>
+                        <div class="health-metric">
+                            <div class="metric-value">65 bpm</div>
+                            <div class="metric-label">Detak Jantung</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="livestock-actions">
+                    <button class="action-btn primary">Detail</button>
+                    <button class="action-btn">Edit</button>
+                    <button class="action-btn">Riwayat</button>
+                </div>
+            </div>
+
+            <!-- Sapi Sakit -->
+            <div class="livestock-card" data-status="sick" data-type="sapi">
+                <div class="livestock-header">
+                    <div>
+                        <div class="livestock-id">SAPI-101</div>
+                        <div class="livestock-type">Sapi Limousin</div>
+                    </div>
+                    <div class="status-badge status-sick">Sakit</div>
+                </div>
+                <div class="livestock-info">
+                    <div class="info-row">
+                        <span class="info-label">Umur:</span>
+                        <span class="info-value">2 tahun 8 bulan</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Berat:</span>
+                        <span class="info-value">380 kg</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Kandang:</span>
+                        <span class="info-value">Kandang B-2</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Gejala:</span>
+                        <span class="info-value">Demam tinggi</span>
+                    </div>
+                </div>
+                <div class="livestock-health">
+                    <div class="health-title">Kondisi Kesehatan</div>
+                    <div class="health-metrics">
+                        <div class="health-metric">
+                            <div class="metric-value">40.2°C</div>
+                            <div class="metric-label">Suhu</div>
+                        </div>
+                        <div class="health-metric">
+                            <div class="metric-value">85 bpm</div>
+                            <div class="metric-label">Detak Jantung</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="livestock-actions">
+                    <button class="action-btn primary">Detail</button>
+                    <button class="action-btn">Obati</button>
+                    <button class="action-btn">Isolasi</button>
+                </div>
+            </div>
+
+            <!-- Sapi Hamil -->
+            <div class="livestock-card" data-status="pregnant" data-type="sapi">
+                <div class="livestock-header">
+                    <div>
+                        <div class="livestock-id">SAPI-205</div>
+                        <div class="livestock-type">Sapi Simmental</div>
+                    </div>
+                    <div class="status-badge status-pregnant">Hamil</div>
+                </div>
+                <div class="livestock-info">
+                    <div class="info-row">
+                        <span class="info-label">Umur:</span>
+                        <span class="info-value">4 tahun 1 bulan</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Berat:</span>
+                        <span class="info-value">520 kg</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Kandang:</span>
+                        <span class="info-value">Kandang C-1</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Usia Kandungan:</span>
+                        <span class="info-value">6 bulan</span>
+                    </div>
+                </div>
+                <div class="livestock-health">
+                    <div class="health-title">Kondisi Kesehatan</div>
+                    <div class="health-metrics">
+                        <div class="health-metric">
+                            <div class="metric-value">38.8°C</div>
+                            <div class="metric-label">Suhu</div>
+                        </div>
+                        <div class="health-metric">
+                            <div class="metric-value">70 bpm</div>
+                            <div class="metric-label">Detak Jantung</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="livestock-actions">
+                    <button class="action-btn primary">Detail</button>
+                    <button class="action-btn">Prenatal</button>
+                    <button class="action-btn">Riwayat</button>
+                </div>
+            </div>
+
+            <!-- Kambing Sehat -->
+            <div class="livestock-card" data-status="healthy" data-type="kambing">
+                <div class="livestock-header">
+                    <div>
+                        <div class="livestock-id">KAMBING-045</div>
+                        <div class="livestock-type">Kambing Etawa</div>
+                    </div>
+                    <div class="status-badge status-healthy">Sehat</div>
+                </div>
+                <div class="livestock-info">
+                    <div class="info-row">
+                        <span class="info-label">Umur:</span>
+                        <span class="info-value">1 tahun 6 bulan</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Berat:</span>
+                        <span class="info-value">45 kg</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Kandang:</span>
+                        <span class="info-value">Kandang D-3</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Terakhir Periksa:</span>
+                        <span class="info-value">1 minggu lalu</span>
+                    </div>
+                </div>
+                <div class="livestock-health">
+                    <div class="health-title">Kondisi Kesehatan</div>
+                    <div class="health-metrics">
+                        <div class="health-metric">
+                            <div class="metric-value">39.1°C</div>
+                            <div class="metric-label">Suhu</div>
+                        </div>
+                        <div class="health-metric">
+                            <div class="metric-value">90 bpm</div>
+                            <div class="metric-label">Detak Jantung</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="livestock-actions">
+                    <button class="action-btn primary">Detail</button>
+                    <button class="action-btn">Edit</button>
+                    <button class="action-btn">Riwayat</button>
+                </div>
+            </div>
+
+            <!-- Domba dalam Perawatan -->
+            <div class="livestock-card" data-status="treatment" data-type="domba">
+                <div class="livestock-header">
+                    <div>
+                        <div class="livestock-id">DOMBA-089</div>
+                        <div class="livestock-type">Domba Merino</div>
+                    </div>
+                    <div class="status-badge status-treatment">Perawatan</div>
+                </div>
+                <div class="livestock-info">
+                    <div class="info-row">
+                        <span class="info-label">Umur:</span>
+                        <span class="info-value">8 bulan</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Berat:</span>
+                        <span class="info-value">35 kg</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Kandang:</span>
+                        <span class="info-value">Kandang E-1</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Perawatan:</span>
+                        <span class="info-value">Antibiotik</span>
+                    </div>
+                </div>
+                <div class="livestock-health">
+                    <div class="health-title">Kondisi Kesehatan</div>
+                    <div class="health-metrics">
+                        <div class="health-metric">
+                            <div class="metric-value">39.5°C</div>
+                            <div class="metric-label">Suhu</div>
+                        </div>
+                        <div class="health-metric">
+                            <div class="metric-value">95 bpm</div>
+                            <div class="metric-label">Detak Jantung</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="livestock-actions">
+                    <button class="action-btn primary">Detail</button>
+                    <button class="action-btn">Monitor</button>
+                    <button class="action-btn">Obat</button>
+                </div>
+            </div>
+
+            <!-- Sapi Sehat 2 -->
+            <div class="livestock-card" data-status="healthy" data-type="sapi">
+                <div class="livestock-header">
+                    <div>
+                        <div class="livestock-id">SAPI-078</div>
+                        <div class="livestock-type">Sapi Angus</div>
+                    </div>
+                    <div class="status-badge status-healthy">Sehat</div>
+                </div>
+                <div class="livestock-info">
+                    <div class="info-row">
+                        <span class="info-label">Umur:</span>
+                        <span class="info-value">2 tahun 4 bulan</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Berat:</span>
+                        <span class="info-value">420 kg</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Kandang:</span>
+                        <span class="info-value">Kandang A-3</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Terakhir Periksa:</span>
+                        <span class="info-value">2 hari lalu</span>
+                    </div>
+                </div>
+                <div class="livestock-health">
+                    <div class="health-title">Kondisi Kesehatan</div>
+                    <div class="health-metrics">
+                        <div class="health-metric">
+                            <div class="metric-value">38.7°C</div>
+                            <div class="metric-label">Suhu</div>
+                        </div>
+                        <div class="health-metric">
+                            <div class="metric-value">68 bpm</div>
+                            <div class="metric-label">Detak Jantung</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="livestock-actions">
+                    <button class="action-btn primary">Detail</button>
+                    <button class="action-btn">Edit</button>
+                    <button class="action-btn">Riwayat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+
+        function addLivestock() {
+            alert('Fitur tambah ternak baru akan segera hadir!');
+        }
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            filterLivestock();
+        });
+
+        // Filter functionality
+        document.getElementById('statusFilter').addEventListener('change', filterLivestock);
+        document.getElementById('typeFilter').addEventListener('change', filterLivestock);
+
+        function filterLivestock() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const typeFilter = document.getElementById('typeFilter').value;
+            const cards = document.querySelectorAll('.livestock-card');
+
+            cards.forEach(card => {
+                const id = card.querySelector('.livestock-id').textContent.toLowerCase();
+                const type = card.querySelector('.livestock-type').textContent.toLowerCase();
+                const kandang = card.querySelector('.info-value').textContent.toLowerCase();
+                const cardStatus = card.getAttribute('data-status');
+                const cardType = card.getAttribute('data-type');
+
+                const matchesSearch = id.includes(searchTerm) || 
+                                    type.includes(searchTerm) || 
+                                    kandang.includes(searchTerm);
+                const matchesStatus = !statusFilter || cardStatus === statusFilter;
+                const matchesType = !typeFilter || cardType === typeFilter;
+
+                if (matchesSearch && matchesStatus && matchesType) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Update stats based on visible cards
+            updateStats();
+        }
+
+        function updateStats() {
+            const visibleCards = document.querySelectorAll('.livestock-card[style="display: block"], .livestock-card:not([style])');
+            const stats = {
+                total: visibleCards.length,
+                healthy: 0,
+                sick: 0,
+                pregnant: 0
+            };
+
+            visibleCards.forEach(card => {
+                const status = card.getAttribute('data-status');
+                if (stats[status] !== undefined) {
+                    stats[status]++;
+                }
+            });
+
+            // Update stat cards
+            document.querySelector('.stat-card .total').textContent = stats.total;
+            document.querySelector('.stat-card .healthy').textContent = stats.healthy;
+            document.querySelector('.stat-card .sick').textContent = stats.sick;
+            document.querySelector('.stat-card .pregnant').textContent = stats.pregnant;
+        }
+
+        // Simulate real-time health updates
+        function updateHealthMetrics() {
+            const cards = document.querySelectorAll('.livestock-card');
+            
+            cards.forEach(card => {
+                if (Math.random() < 0.1) { // 10% chance to update
+                    const tempElement = card.querySelector('.metric-value');
+                    const heartRateElement = card.querySelectorAll('.metric-value')[1];
+                    
+                    if (tempElement && heartRateElement) {
+                        // Update temperature (slight variation)
+                        const currentTemp = parseFloat(tempElement.textContent);
+                        const newTemp = (currentTemp + (Math.random() - 0.5) * 0.5).toFixed(1);
+                        tempElement.textContent = newTemp + '°C';
+                        
+                        // Update heart rate
+                        const currentHR = parseInt(heartRateElement.textContent);
+                        const newHR = currentHR + Math.floor((Math.random() - 0.5) * 10);
+                        heartRateElement.textContent = newHR + ' bpm';
+                    }
+                }
+            });
+        }
+
+        // Update metrics every 30 seconds
+        setInterval(updateHealthMetrics, 30000);
+
+        // Initialize stats
+        updateStats();
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (e) => {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            
+            if (window.innerWidth <= 768 && 
+                !sidebar.contains(e.target) && 
+                !toggle.contains(e.target) && 
+                sidebar.classList.contains('open')) {
+                sidebar.classList.remove('open');
+            }
+        });
+
+        // Add click handlers for action buttons
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('action-btn')) {
+                const action = e.target.textContent;
+                const card = e.target.closest('.livestock-card');
+                const livestockId = card.querySelector('.livestock-id').textContent;
+                
+                switch(action) {
+                    case 'Detail':
+                        showLivestockDetail(livestockId);
+                        break;
+                    case 'Edit':
+                        editLivestock(livestockId);
+                        break;
+                    case 'Riwayat':
+                        showHistory(livestockId);
+                        break;
+                    case 'Obati':
+                        treatLivestock(livestockId);
+                        break;
+                    case 'Isolasi':
+                        isolateLivestock(livestockId);
+                        break;
+                    case 'Prenatal':
+                        showPrenatalCare(livestockId);
+                        break;
+                    case 'Monitor':
+                        monitorLivestock(livestockId);
+                        break;
+                    case 'Obat':
+                        giveMedicine(livestockId);
+                        break;
+                }
+            }
+        });
+
+        function showLivestockDetail(id) {
+            alert(`Menampilkan detail lengkap untuk ${id}`);
+        }
+
+        function editLivestock(id) {
+            alert(`Mengedit data ${id}`);
+        }
+
+        function showHistory(id) {
+            alert(`Menampilkan riwayat kesehatan ${id}`);
+        }
+
+        function treatLivestock(id) {
+            alert(`Memulai perawatan untuk ${id}`);
+        }
+
+        function isolateLivestock(id) {
+            alert(`Mengisolasi ${id} ke kandang khusus`);
+        }
+
+        function showPrenatalCare(id) {
+            alert(`Menampilkan perawatan prenatal untuk ${id}`);
+        }
+
+        function monitorLivestock(id) {
+            alert(`Memantau kondisi ${id} secara intensif`);
+        }
+
+        function giveMedicine(id) {
+            alert(`Memberikan obat untuk ${id}`);
+        }
+    </script>
+</body>
+</html>

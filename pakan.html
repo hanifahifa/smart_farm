@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Farm - Manajemen Pakan</title>
+    <style>
+        :root {
+            --primary-green: #00B04F;
+            --secondary-green: #34C759;
+            --accent-green: #40E85B;
+            --dark-green: #1B5E20;
+            --light-green: #E8F5E8;
+            --bg-primary: #F8F9FA;
+            --bg-secondary: #FFFFFF;
+            --text-primary: #1D1D1F;
+            --text-secondary: #6E6E73;
+            --border-light: #E5E5E7;
+            --shadow-light: rgba(0, 0, 0, 0.04);
+            --shadow-medium: rgba(0, 0, 0, 0.08);
+            --shadow-dark: rgba(0, 0, 0, 0.12);
+            --border-radius: 16px;
+            --border-radius-large: 24px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+            font-size: 16px;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 280px;
+            height: 100vh;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-light);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            margin-bottom: 32px;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+            border-radius: var(--border-radius);
+            color: white;
+        }
+
+        .logo {
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+            margin-right: 12px;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .welcome {
+            font-size: 14px;
+            font-weight: 600;
+            opacity: 0.9;
+            margin-bottom: 4px;
+        }
+
+        .user-role {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .nav-menu {
+            list-style: none;
+            flex: 1;
+        }
+
+        .nav-item {
+            margin-bottom: 4px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            font-size: 15px;
+        }
+
+        .nav-link:hover {
+            background-color: var(--light-green);
+            color: var(--primary-green);
+        }
+
+        .nav-link.active {
+            background-color: var(--primary-green);
+            color: white;
+            box-shadow: 0 2px 8px rgba(0, 176, 79, 0.24);
+        }
+
+        .nav-icon {
+            margin-right: 12px;
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .settings-section {
+            padding-top: 16px;
+            border-top: 1px solid var(--border-light);
+            margin-top: 16px;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            padding: 24px;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius-large);
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 16px var(--shadow-light);
+            border: 1px solid var(--border-light);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .header-subtitle {
+            color: var(--text-secondary);
+            font-size: 16px;
+            font-weight: 400;
+        }
+
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .content-section {
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            box-shadow: 0 2px 8px var(--shadow-light);
+            border: 1px solid var(--border-light);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 18px;
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+            border-radius: 2px;
+            margin-right: 12px;
+        }
+
+        .add-btn {
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0, 176, 79, 0.24);
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 176, 79, 0.32);
+        }
+
+        /* Table Styling */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .table th {
+            background: var(--bg-primary);
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-light);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-light);
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .table tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        .table tbody tr:hover {
+            background-color: var(--bg-primary);
+        }
+
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Status Badges */
+        .status {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-available {
+            background: rgba(52, 199, 89, 0.1);
+            color: var(--dark-green);
+            border: 1px solid rgba(52, 199, 89, 0.2);
+        }
+
+        .status-low {
+            background: rgba(255, 149, 0, 0.1);
+            color: #C65100;
+            border: 1px solid rgba(255, 149, 0, 0.2);
+        }
+
+        .status-empty {
+            background: rgba(255, 59, 48, 0.1);
+            color: #D70015;
+            border: 1px solid rgba(255, 59, 48, 0.2);
+        }
+
+        /* Schedule Cards */
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .schedule-card {
+            background: var(--bg-primary);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            text-align: center;
+            border: 2px solid var(--border-light);
+            transition: all 0.2s ease;
+        }
+
+        .schedule-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px var(--shadow-medium);
+            border-color: var(--primary-green);
+        }
+
+        .schedule-card h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .schedule-amount {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .schedule-time {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .schedule-status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-done {
+            background: rgba(52, 199, 89, 0.1);
+            color: var(--dark-green);
+            border: 1px solid rgba(52, 199, 89, 0.2);
+        }
+
+        .status-waiting {
+            background: rgba(255, 149, 0, 0.1);
+            color: #C65100;
+            border: 1px solid rgba(255, 149, 0, 0.2);
+        }
+
+        .status-pending {
+            background: rgba(255, 59, 48, 0.1);
+            color: #D70015;
+            border: 1px solid rgba(255, 59, 48, 0.2);
+        }
+
+        /* Action Buttons */
+        .action-btn {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-light);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+        }
+
+        .action-btn:hover {
+            background: var(--primary-green);
+            color: white;
+            border-color: var(--primary-green);
+        }
+
+        /* Mobile Menu Toggle */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 12px;
+            cursor: pointer;
+            box-shadow: 0 2px 16px var(--shadow-light);
+            color: var(--text-primary);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            
+            .header {
+                padding: 24px;
+                margin-top: 60px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .schedule-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" onclick="toggleSidebar()">
+        <span style="font-size: 18px;">☰</span>
+    </button>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="logo-section">
+            <div class="logo">SF</div>
+            <div class="user-info">
+                <div class="welcome">Selamat Datang, Ifa!</div>
+                <div class="user-role">Manajer Peternakan</div>
+            </div>
+        </div>
+        
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="dashboard.html" class="nav-link">
+                    <span class="nav-icon">📊</span>
+                    Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="data_ternak.html" class="nav-link">
+                    <span class="nav-icon">🐄</span>
+                    Data Ternak
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="monitoring_sensor.html" class="nav-link">
+                    <span class="nav-icon">📡</span>
+                    Monitoring Sensor
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="pakan.html" class="nav-link active">
+                    <span class="nav-icon">🌾</span>
+                    Pakan
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="keuangan.html" class="nav-link">
+                    <span class="nav-icon">💰</span>
+                    Keuangan
+                </a>
+            </li>
+        </ul>
+        
+        <div class="settings-section">
+            <a href="#" class="nav-link">
+                <span class="nav-icon">⚙</span>
+                Pengaturan
+            </a>
+        </div>
+         <div class="settings-section">
+            <a href="login.html" class="nav-link">
+                <span class="nav-icon">⚙</span>
+                exit
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1>Manajemen Pakan</h1>
+            <p class="header-subtitle">Kelola stok dan jadwal pemberian pakan ternak</p>
+        </div>
+
+        <!-- Content Grid -->
+        <div class="content-grid">
+            <!-- Stok Pakan -->
+            <div class="content-section">
+                <div class="section-title">
+                    🌾 Stok Pakan
+                    <button class="add-btn" onclick="addFeed()">+ Tambah</button>
+                </div>
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Jenis Pakan</th>
+                                <th>Stok</th>
+                                <th>Kedaluwarsa</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Pakan Rumput</td>
+                                <td>120 kg</td>
+                                <td>25/12/2025</td>
+                                <td><span class="status status-available">Tersedia</span></td>
+                                <td><button class="action-btn">Edit</button></td>
+                            </tr>
+                            <tr>
+                                <td>Pakan Komersial</td>
+                                <td>50 kg</td>
+                                <td>15/12/2025</td>
+                                <td><span class="status status-low">Menipis</span></td>
+                                <td><button class="action-btn">Edit</button></td>
+                            </tr>
+                            <tr>
+                                <td>Pakan Konsentrat</td>
+                                <td>80 kg</td>
+                                <td>20/01/2026</td>
+                                <td><span class="status status-available">Tersedia</span></td>
+                                <td><button class="action-btn">Edit</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Stok Vitamin -->
+            <div class="content-section">
+                <div class="section-title">
+                    💊 Stok Vitamin
+                    <button class="add-btn" onclick="addVitamin()">+ Tambah</button>
+                </div>
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Nama Vitamin</th>
+                                <th>Stok</th>
+                                <th>Kedaluwarsa</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Vitamin A</td>
+                                <td>10 botol</td>
+                                <td>06/06/2026</td>
+                                <td><span class="status status-available">Tersedia</span></td>
+                                <td><button class="action-btn">Edit</button></td>
+                            </tr>
+                            <tr>
+                                <td>Vitamin B Complex</td>
+                                <td>5 botol</td>
+                                <td>26/06/2026</td>
+                                <td><span class="status status-available">Tersedia</span></td>
+                                <td><button class="action-btn">Edit</button></td>
+                            </tr>
+                            <tr>
+                                <td>Vitamin D3</td>
+                                <td>2 botol</td>
+                                <td>15/07/2026</td>
+                                <td><span class="status status-low">Menipis</span></td>
+                                <td><button class="action-btn">Edit</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Jadwal Pemberian Pakan -->
+        <div class="content-section">
+            <div class="section-title">
+                📅 Jadwal Pemberian Pakan Hari Ini
+                <button class="add-btn" onclick="addSchedule()">+ Jadwal Baru</button>
+            </div>
+            <div class="schedule-grid">
+                <div class="schedule-card">
+                    <h3>KANDANG 1</h3>
+                    <div class="schedule-amount">125 kg</div>
+                    <div class="schedule-time">07:00 WIB</div>
+                    <div class="schedule-status status-done">Selesai</div>
+                </div>
+                <div class="schedule-card">
+                    <h3>KANDANG 2</h3>
+                    <div class="schedule-amount">100 kg</div>
+                    <div class="schedule-time">12:00 WIB</div>
+                    <div class="schedule-status status-done">Selesai</div>
+                </div>
+                <div class="schedule-card">
+                    <h3>KANDANG 3</h3>
+                    <div class="schedule-amount">100 kg</div>
+                    <div class="schedule-time">17:00 WIB</div>
+                    <div class="schedule-status status-waiting">Menunggu</div>
+                </div>
+                <div class="schedule-card">
+                    <h3>KANDANG 4</h3>
+                    <div class="schedule-amount">90 kg</div>
+                    <div class="schedule-time">19:00 WIB</div>
+                    <div class="schedule-status status-pending">Terjadwal</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+
+        function addFeed() {
+            alert('Fitur tambah pakan baru akan segera hadir!');
+        }
+
+        function addVitamin() {
+            alert('Fitur tambah vitamin baru akan segera hadir!');
+        }
+
+        function addSchedule() {
+            alert('Fitur tambah jadwal baru akan segera hadir!');
+        }
+
+        // Simulate schedule updates
+        function updateScheduleStatus() {
+            const cards = document.querySelectorAll('.schedule-card');
+            const currentTime = new Date().getHours();
+            
+            cards.forEach(card => {
+                const timeText = card.querySelector('.schedule-time').textContent;
+                const hour = parseInt(timeText.split(':')[0]);
+                const statusElement = card.querySelector('.schedule-status');
+                
+                if (currentTime > hour) {
+                    statusElement.className = 'schedule-status status-done';
+                    statusElement.textContent = 'Selesai';
+                } else if (currentTime === hour) {
+                    statusElement.className = 'schedule-status status-waiting';
+                    statusElement.textContent = 'Berlangsung';
+                } else {
+                    statusElement.className = 'schedule-status status-pending';
+                    statusElement.textContent = 'Terjadwal';
+                }
+            });
+        }
+
+        // Update every minute
+        setInterval(updateScheduleStatus, 60000);
+        updateScheduleStatus(); // Initial call
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (e) => {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            
+            if (window.innerWidth <= 768 && 
+                !sidebar.contains(e.target) && 
+                !toggle.contains(e.target) && 
+                sidebar.classList.contains('open')) {
+                sidebar.classList.remove('open');
+            }
+        });
+    </script>
+</body>
+</html>
